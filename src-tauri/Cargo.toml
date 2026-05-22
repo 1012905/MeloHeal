@@ -1,0 +1,26 @@
+[package]
+name = "meloheal"
+version = "1.0.0"
+description = "MeloHeal 音愈时光 — 歌曲列表去重排序与随机选歌"
+authors = ["you"]
+edition = "2021"
+
+[lib]
+name = "meloheal"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# 版本号精确锁定，避免每次构建因 semver 重新拉取新版本破坏缓存
+tauri = { version = "2", features = [] }
+tauri-plugin-autostart = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tauri-plugin-log = "2"
+
+# 依赖包编译优化：统一使用较高并行度
+[profile.release.package."*"]
+codegen-units = 1
