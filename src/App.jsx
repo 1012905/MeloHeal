@@ -4,8 +4,6 @@ import SongFormModal from "./components/SongFormModal.jsx";
 import SkeletonPage from "./components/Skeleton.jsx";
 import useSongStore from "./hooks/useSongStore.js";
 import { t, getSystemLang } from "./lib/i18n.js";
-import AuthModal from "../shared/components/AuthModal.jsx";
-import { getCurrentUser, onAuthStateChanged } from "../shared/supabase.js";
 
 const TabSongs = lazy(() => import("./components/TabSongs.jsx"));
 const TabPlaylists = lazy(() => import("./components/TabPlaylists.jsx"));
@@ -41,13 +39,6 @@ export default function App() {
     localStorage.setItem("mh-lang", lang());
   });
   const toggleLang = () => setLang(lang() === "zh" ? "en" : "zh");
-
-  const [user, setUser] = createSignal(null);
-  createEffect(() => {
-    getCurrentUser().then(setUser);
-    const unsub = onAuthStateChanged((u) => setUser(u));
-    return unsub;
-  });
 
   const store = useSongStore();
   const [activeTab, setActiveTab] = createSignal("songs");
@@ -232,12 +223,6 @@ export default function App() {
         onToggleTheme={() => setIsDark(!isDark())}
         lang={lang()}
         onToggleLang={toggleLang}
-      />
-
-      <AuthModal
-        user={user()}
-        onLogin={(u) => setUser(u)}
-        onLogout={() => setUser(null)}
       />
 
       <div class="tab-bar">

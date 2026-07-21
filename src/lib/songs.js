@@ -57,8 +57,10 @@ export function buildOutputText(uniqueSongs) {
 
 /* ── language detection ── */
 export function detectLanguage(name) {
-  if (/[\u4e00-\u9fff\u3400-\u4dbf]/.test(name)) return "zh";
+  // Kana (hiragana/katakana) → Japanese, regardless of kanji presence
   if (/[\u3040-\u309f\u30a0-\u30ff]/.test(name)) return "ja";
+  // CJK without kana → Chinese
+  if (/[\u4e00-\u9fff\u3400-\u4dbf]/.test(name)) return "zh";
   if (/[a-zA-Z]/.test(name)) return "en";
   return "other";
 }

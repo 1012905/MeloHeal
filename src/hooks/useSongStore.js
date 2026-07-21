@@ -1,4 +1,5 @@
 import { createSignal, createEffect } from "solid-js";
+import { detectLanguage, normalizeForCompare, findSimilar } from "../lib/songs.js";
 
 /* ── helpers ── */
 let _idCounter = Date.now();
@@ -10,34 +11,6 @@ function loadJSON(key, fallback) {
 }
 function saveJSON(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
-}
-
-/* ── language detection ── */
-function detectLanguage(name) {
-  // Kana (hiragana/katakana) → Japanese, regardless of kanji presence
-  if (/[\u3040-\u309f\u30a0-\u30ff]/.test(name)) return "ja";
-  // CJK without kana → Chinese
-  if (/[\u4e00-\u9fff\u3400-\u4dbf]/.test(name)) return "zh";
-  if (/[a-zA-Z]/.test(name)) return "en";
-  return "other";
-}
-
-/* ── fuzzy dedup ── */
-function normalizeForCompare(s) {
-  return s.normalize("NFKC").replace(/[\s\u3000]+/g, " ").trim().toLowerCase();
-}
-
-function findSimilar(name, existing) {
-  const norm = normalizeForCompare(name);
-  const results = [];
-  for (const song of existing) {
-    const snorm = normalizeForCompare(song.name);
-    // Exact match after normalization
-    if (snorm === norm) results.push({ song, type: "exact" });
-    // Partial match or edit distance check
-    else if (snorm.includes(norm) || norm.includes(snorm)) results.push({ song, type: "partial" });
-  }
-  return results;
 }
 
 /* ── storage keys ── */

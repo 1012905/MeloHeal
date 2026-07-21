@@ -36,10 +36,6 @@
 - 歌曲总数、分类分布、语言分布
 - 按添加时间、更新时间的趋势图
 
-### 🔐 云同步（可选）
-
-通过 Supabase 实现跨设备用户认证，支持登录后同步歌单数据。
-
 ### 🌐 国际化
 
 - 简体中文 / English 双语切换
@@ -68,7 +64,7 @@
 |----|------|
 | 前端框架 | [Solid.js](https://www.solidjs.com/) + [Vite 6](https://vitejs.dev/) |
 | 桌面壳 | [Tauri 2](https://v2.tauri.app/) (Rust) |
-| 后端 | [Supabase](https://supabase.com/) (Auth) |
+| 后端 | 无（纯本地 localStorage） |
 | 测试 | [Vitest](https://vitest.dev/) |
 | 样式 | LightningCSS + CSS 自定义属性主题系统 |
 
@@ -93,16 +89,7 @@ npm run tauri build
 npm test
 ```
 
-### 环境变量
-
-创建 `.env` 文件：
-
-```
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-```
-
-> Supabase 配置为可选；不配置时应用完全离线运行，仅缺失登录功能。
+纯本地应用，无需后端服务。所有数据存储在浏览器 localStorage 中。
 
 ---
 
@@ -130,9 +117,6 @@ MeloHeal/
 │   └── src/
 │       ├── main.rs         # 桌面入口
 │       └── lib.rs          # Tauri 插件注册（含 autostart）
-├── shared/                 # 跨项目共享
-│   ├── supabase.js         # Supabase 客户端 & API
-│   └── components/AuthModal.jsx
 └── package.json
 ```
 
