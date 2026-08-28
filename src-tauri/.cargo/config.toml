@@ -1,5 +1,8 @@
 [target.x86_64-pc-windows-msvc]
-rustflags = ["-C", "linker=lld-link"]
+# 使用 Visual Studio Build Tools 的 MSVC linker
+# 首次运行前需设置环境变量 LIB 和 INCLUDE（参考同级 msvc-env.sh）
+linker = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\link.exe"
+rustflags = []
 
 [build]
 # 并行编译任务数（留空 = 自动检测 CPU 核数）

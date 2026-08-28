@@ -39,10 +39,10 @@ export default function TabSongs(props) {
           </select>
           <select class="filter-select" value={flt().language} onChange={(e) => sFlt({ ...flt(), language: e.target.value })}>
             <option value="">{t(lang(), "allLanguages")}</option>
-            <option value="zh">中文</option>
-            <option value="en">English</option>
-            <option value="ja">日本語</option>
-            <option value="other">Other</option>
+            <option value="zh">{t(lang(), "langZh")}</option>
+            <option value="en">{t(lang(), "langEn")}</option>
+            <option value="ja">{t(lang(), "langJa")}</option>
+            <option value="other">{t(lang(), "langOther")}</option>
           </select>
           <label class="toggle-chip" classList={{ active: flt().favoriteOnly }}>
             <input type="checkbox" checked={flt().favoriteOnly}

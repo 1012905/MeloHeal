@@ -11,7 +11,7 @@ export default function TabSettings(props) {
         <div class="theme-picker">
           {themes.map((th) => (
             <button class="theme-swatch" classList={{ active: cT() === th }}
-              style={{ "--swatch-color": { pink: "#e880a8", blue: "#6aaaeb", green: "#5bbf7a", purple: "#b48ad9" }[th] }}
+              style={{ "--swatch-color": { pink: "#e880a8", blue: "#6aaaeb", green: "#5bbf7a", purple: "#b48ad9" }[th] }} /* 需与 tokens.css 中的 --accent-* 同步 */
               onClick={() => scT(th)}>
               <span class="theme-swatch-circle" />
               <span class="theme-swatch-label">{t(lang(), `theme${th.charAt(0).toUpperCase() + th.slice(1)}`)}</span>

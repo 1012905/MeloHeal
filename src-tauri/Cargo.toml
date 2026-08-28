@@ -6,8 +6,8 @@ authors = ["you"]
 edition = "2021"
 
 [lib]
-name = "meloheal"
-crate-type = ["lib", "cdylib", "staticlib"]
+name = "meloheal_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

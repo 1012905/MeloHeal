@@ -98,4 +98,10 @@ export default {
   duplicateWarning: "⚠️ Similar song found: {0}",
   merge: "Merge",
   skip: "Skip",
+
+  langZh: "中文",
+  langEn: "English",
+  langJa: "日本語",
+  langOther: "Other",
+  songCount: "{0} songs",
 };

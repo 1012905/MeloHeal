@@ -5,6 +5,9 @@ import {
   processSongs,
   escapeHtml,
   buildOutputText,
+  detectLanguage,
+  normalizeForCompare,
+  findSimilar,
 } from "./songs.js";
 
 describe("normalizeTitle", () => {
@@ -60,5 +63,59 @@ describe("buildOutputText", () => {
     expect(result).toContain("Song A");
     expect(result).toContain("Song B");
     expect(result).toContain("共2首");
+  });
+});
+
+describe("detectLanguage", () => {
+  it("detects English", () => {
+    expect(detectLanguage("Hello World")).toBe("en");
+    expect(detectLanguage("Lost Stars")).toBe("en");
+  });
+  it("detects Chinese", () => {
+    expect(detectLanguage("前前前世")).toBe("zh");
+    expect(detectLanguage("光るなら")).toBe("ja"); // kana → Japanese
+  });
+  it("detects Japanese (kana)", () => {
+    expect(detectLanguage("アイドル")).toBe("ja");
+    expect(detectLanguage("光るなら")).toBe("ja");
+  });
+  it("detects mixed", () => {
+    expect(detectLanguage("Lemon (レモン)")).toBe("ja");
+  });
+  it("detects other for non-CJK/non-Latin", () => {
+    expect(detectLanguage("")).toBe("other");
+  });
+});
+
+describe("normalizeForCompare", () => {
+  it("normalizes NFKC and trims spaces", () => {
+    expect(normalizeForCompare("  Hello　World  ")).toBe("hello world");
+  });
+  it("lowercases result", () => {
+    expect(normalizeForCompare("LOST STARS")).toBe("lost stars");
+  });
+});
+
+describe("findSimilar", () => {
+  it("finds exact match", () => {
+    const existing = [{ name: "Hello World" }, { name: "Goodbye" }];
+    const result = findSimilar("hello world", existing);
+    expect(result.length).toBeGreaterThanOrEqual(1);
+    expect(result[0].type).toBe("exact");
+  });
+  it("finds partial match", () => {
+    const existing = ["Hello World Hello"];
+    const result = findSimilar("Hello", existing);
+    expect(result.length).toBeGreaterThanOrEqual(1);
+    expect(result[0].type).toBe("partial");
+  });
+  it("returns empty for no match", () => {
+    const result = findSimilar("NotInList", ["Something Else"]);
+    expect(result.length).toBe(0);
+  });
+  it("handles string array items", () => {
+    const result = findSimilar("Test", ["Test", "Other"]);
+    expect(result.length).toBe(1);
+    expect(result[0].type).toBe("exact");
   });
 });

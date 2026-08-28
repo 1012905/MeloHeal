@@ -53,7 +53,7 @@ export default function SongFormModal(props) {
         <div class="modal-body">
           <div class="form-group">
             <label>{t(props.lang, "songName")}</label>
-            <input type="text" class="form-input" value={name()} onInput={(e) => setName(e.target.value)} autofocus required />
+            <input type="text" class="form-input" value={name()} onInput={(e) => setName(e.target.value)} autoFocus required />
           </div>
           <div class="form-group">
             <label>{t(props.lang, "category")}</label>
@@ -70,10 +70,10 @@ export default function SongFormModal(props) {
           <div class="form-group">
             <label>{t(props.lang, "language")}</label>
             <select class="form-input" value={language()} onChange={(e) => setLanguage(e.target.value)}>
-              <option value="en">English</option>
-              <option value="zh">中文</option>
-              <option value="ja">日本語</option>
-              <option value="other">Other</option>
+              <option value="en">{t(props.lang, "langEn")}</option>
+              <option value="zh">{t(props.lang, "langZh")}</option>
+              <option value="ja">{t(props.lang, "langJa")}</option>
+              <option value="other">{t(props.lang, "langOther")}</option>
             </select>
           </div>
           <div class="form-group">

@@ -14,28 +14,6 @@ export function SkeletonCard(props) {
   );
 }
 
-export function SkeletonText(props) {
-  return (
-    <div
-      class="skeleton-line"
-      classList={{
-        "skeleton-title": props.variant === "title",
-        "skeleton-body--short": props.variant === "short",
-      }}
-      style={{ width: props.width, height: props.height }}
-    />
-  );
-}
-
-export function SkeletonCircle(props) {
-  return (
-    <div
-      class="skeleton-circle"
-      style={{ width: props.size || 48, height: props.size || 48 }}
-    />
-  );
-}
-
 /* Default: full-page loading with multiple skeleton cards */
 export default function SkeletonPage() {
   return (

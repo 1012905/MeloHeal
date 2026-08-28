@@ -1,3 +1,9 @@
+/**
+ * MeloHeal song store — reactive data layer wrapping localStorage
+ * Songs, playlists, recent picks, and deleted songs are managed as Solid signals.
+ * All CRUD operations are exposed via the returned object.
+ */
+
 import { createSignal, createEffect } from "solid-js";
 import { detectLanguage, normalizeForCompare, findSimilar } from "../lib/songs.js";
 
@@ -7,10 +13,10 @@ function uid() { return `s${++_idCounter}`; }
 
 function loadJSON(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
-  catch { return fallback; }
+  catch (e) { console.warn("loadJSON error for", key, e); return fallback; }
 }
 function saveJSON(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { console.warn("saveJSON error for", key, e); }
 }
 
 /* ── storage keys ── */
@@ -203,15 +209,17 @@ export default function useSongStore() {
   // ── sorting ──
   function sortSongs(list, sortBy) {
     const sorted = [...list];
-    // Favorites always on top
-    sorted.sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0));
-    switch (sortBy) {
-      case "az": sorted.sort((a, b) => a.name.localeCompare(b.name)); break;
-      case "za": sorted.sort((a, b) => b.name.localeCompare(a.name)); break;
-      case "newest": sorted.sort((a, b) => b.createdAt - a.createdAt); break;
-      case "random": sorted.sort(() => Math.random() - 0.5); break;
-      default: break;
-    }
+    sorted.sort((a, b) => {
+      // 收藏置顶
+      if (a.favorite !== b.favorite) return b.favorite ? 1 : -1;
+      switch (sortBy) {
+        case "az": return a.name.localeCompare(b.name);
+        case "za": return b.name.localeCompare(a.name);
+        case "newest": return b.createdAt - a.createdAt;
+        case "random": return Math.random() - 0.5;
+        default: return 0;
+      }
+    });
     return sorted;
   }
 
@@ -229,14 +237,15 @@ export default function useSongStore() {
   }
 
   // ── import/export ──
-  function exportTxt() {
-    return ["Song Name", "", ...songs().map((s) => s.name), "", `共${songs().length}首`].join("\n");
+  function exportTxt(lang) {
+    const footer = lang === "zh" ? `共${songs().length}首` : `Total: ${songs().length}`;
+    return ["Song Name", "", ...songs().map((s) => s.name), "", footer].join("\n");
   }
 
   function importTxt(text) {
     const lines = text.split("\n")
       .map((l) => l.trim())
-      .filter((l) => l && !/^共\d+首/.test(l) && l !== "Song Name" && l !== "歌名");
+      .filter((l) => l && !/^共\d+首$|^Total:\s*\d+$/i.test(l) && l !== "Song Name" && l !== "歌名");
     return addSongs(lines);
   }
 
@@ -247,19 +256,26 @@ export default function useSongStore() {
   function importJson(jsonStr) {
     try {
       const data = JSON.parse(jsonStr);
+      const idMap = {};
       if (data.songs) {
         for (const s of data.songs) {
-          // Check for duplicates by name
           const similar = findSimilar(s.name, songs());
-          if (similar.length === 0) {
-            setSongs((prev) => [...prev, { ...s, id: uid(), createdAt: Date.now(), updatedAt: Date.now() }]);
+          if (similar.length > 0) {
+            // 已有同名歌曲，映射到现有 ID
+            idMap[s.id] = similar[0].match.id;
+          } else {
+            const newId = uid();
+            idMap[s.id] = newId;
+            setSongs((prev) => [...prev, { ...s, id: newId, createdAt: Date.now(), updatedAt: Date.now() }]);
           }
         }
       }
       if (data.playlists) {
         for (const pl of data.playlists) {
           if (!playlists().find((p) => p.name === pl.name)) {
-            setPlaylists((prev) => [...prev, { ...pl, id: uid() }]);
+            const newPlId = uid();
+            const mappedSongIds = (pl.songIds || []).map((id) => idMap[id]).filter(Boolean);
+            setPlaylists((prev) => [...prev, { ...pl, id: newPlId, songIds: mappedSongIds }]);
           }
         }
       }

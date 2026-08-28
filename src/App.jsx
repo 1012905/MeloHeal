@@ -72,7 +72,8 @@ export default function App() {
   const handleKeyDown = (e) => {
     if (e.ctrlKey && e.key === "n") { e.preventDefault(); setShowAddModal(true); }
     if (e.ctrlKey && e.key === "f") { e.preventDefault(); document.getElementById("searchInput")?.focus(); }
-    if (e.key === "Delete" && selectedSongs().size > 0) { handleDeleteSelected(); }
+    // 在输入框中不响应 Delete 快捷键，避免误删
+    if (e.key === "Delete" && !["INPUT", "TEXTAREA"].includes(e.target.tagName) && selectedSongs().size > 0) { handleDeleteSelected(); }
     if (e.ctrlKey && e.key === "z") { if (store.undoDelete()) showToast(t(lang(), "saved"), "success"); }
   };
 
@@ -91,14 +92,6 @@ export default function App() {
       list = store.searchSongs(q, flt);
     }
     return store.sortSongs(list, sortBy());
-  };
-
-  const handleAddSong = (name, overrides = {}) => {
-    if (!name.trim()) return;
-    const dups = store.checkDuplicates(name);
-    if (dups.length > 0) setDuplicateWarnings([{ name, dups }]);
-    store.addSong(name, overrides);
-    showToast(t(lang(), "saved"), "success");
   };
 
   const handleEditSong = (id, updates) => {
@@ -125,24 +118,24 @@ export default function App() {
   };
 
   const handleExportTxt = () => {
-    const text = store.exportTxt();
-    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "meloheal-songs.txt";
-    document.body.appendChild(a); a.click();
-    document.body.removeChild(a); URL.revokeObjectURL(url);
+    const text = store.exportTxt(lang());
+    downloadBlob(text, "meloheal-songs.txt", "text/plain;charset=utf-8");
   };
 
   const handleExportJson = () => {
     const text = store.exportJson();
-    const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+    downloadBlob(text, "meloheal-backup.json", "application/json;charset=utf-8");
+  };
+
+  /** 下载文件的辅助函数 */
+  function downloadBlob(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = "meloheal-backup.json";
+    a.href = url; a.download = filename;
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
-  };
+  }
 
   const handleImportTxt = () => {
     const input = document.createElement("input");
@@ -295,6 +288,9 @@ export default function App() {
             if (id) {
               store.updateSong(id, data);
             } else {
+              // 检测重复
+              const dups = store.checkDuplicates(data.name);
+              if (dups.length > 0) setDuplicateWarnings([{ name: data.name, dups }]);
               const song = store.addSong(data.name, data);
               setAddCreatedId(song.id);
             }
@@ -316,11 +312,11 @@ export default function App() {
       </Show>
 
       <Show when={showBatchModal()}>
-        <div class="modal-overlay" style="display:flex;" onClick={(e) => { if (e.target === e.currentTarget) setShowBatchModal(false); }}>
+        <div class="modal-overlay" style="display:flex;" onClick={(e) => { if (e.target === e.currentTarget) { setShowBatchModal(false); setBatchText(""); } }}>
           <div class="modal-card glass-panel">
             <div class="modal-header">
               <span class="modal-title">{t(lang(), "batchAdd")}</span>
-              <button class="modal-close-btn" onClick={() => setShowBatchModal(false)}>
+              <button class="modal-close-btn" onClick={() => { setShowBatchModal(false); setBatchText(""); }}>
                 <svg width="18" height="18" viewBox="0 0 18 18"><path d="M4 4L14 14M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
               </button>
             </div>
@@ -329,7 +325,7 @@ export default function App() {
                 value={batchText()} onInput={(e) => setBatchText(e.target.value)} />
               <div class="btn-row" style="margin-top:12px;">
                 <button class="btn-primary" onClick={handleBatchImport}>{t(lang(), "importBtn")}</button>
-                <button class="glass-btn" onClick={() => setShowBatchModal(false)}>{t(lang(), "cancel")}</button>
+                <button class="glass-btn" onClick={() => { setShowBatchModal(false); setBatchText(""); }}>{t(lang(), "cancel")}</button>
               </div>
             </div>
           </div>

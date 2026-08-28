@@ -22,9 +22,9 @@ export default function TabRandom(props) {
           <select class="filter-select" value={rF().language}
             onChange={(e) => srF({ ...rF(), language: e.target.value })}>
             <option value="">{t(lang(), "pickFilterLanguage")}</option>
-            <option value="zh">中文</option>
-            <option value="en">English</option>
-            <option value="ja">日本語</option>
+            <option value="zh">{t(lang(), "langZh")}</option>
+            <option value="en">{t(lang(), "langEn")}</option>
+            <option value="ja">{t(lang(), "langJa")}</option>
           </select>
 
         </div>
