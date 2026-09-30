@@ -1,3 +1,5 @@
+import { stripEmoji } from "./display.js";
+
 export default function TabSettings(props) {
   const { lang, t, themes } = props;
   const cT = props.currentTheme, scT = props.setCurrentTheme;
@@ -7,21 +9,22 @@ export default function TabSettings(props) {
   return (
     <>
       <div class="section-card">
-        <div class="section-title">🎨 {t(lang(), "themeTitle")}</div>
+        <div class="section-title">{stripEmoji(t(lang(), "themeTitle"))}</div>
         <div class="theme-picker">
           {themes.map((th) => (
             <button class="theme-swatch" classList={{ active: cT() === th }}
-              style={{ "--swatch-color": { pink: "#e880a8", blue: "#6aaaeb", green: "#5bbf7a", purple: "#b48ad9" }[th] }} /* 需与 tokens.css 中的 --accent-* 同步 */
+              /* --swatch-* 定义在 tokens.css，与各主题 --accent-solid 保持同步 */
+              style={{ "--swatch-color": `var(--swatch-${th})` }}
               onClick={() => scT(th)}>
               <span class="theme-swatch-circle" />
-              <span class="theme-swatch-label">{t(lang(), `theme${th.charAt(0).toUpperCase() + th.slice(1)}`)}</span>
+              <span class="theme-swatch-label">{stripEmoji(t(lang(), `theme${th.charAt(0).toUpperCase() + th.slice(1)}`))}</span>
             </button>
           ))}
         </div>
       </div>
 
       <div class="section-card">
-        <div class="section-title">📦 {t(lang(), "importBtn")} / {t(lang(), "exportBtn")}</div>
+        <div class="section-title">{stripEmoji(t(lang(), "importBtn"))} / {stripEmoji(t(lang(), "exportBtn"))}</div>
         <div class="btn-row">
           <button class="glass-btn" onClick={hIT}>{t(lang(), "importTxt")}</button>
           <button class="glass-btn" onClick={hIJ}>{t(lang(), "importJson")}</button>
@@ -31,7 +34,7 @@ export default function TabSettings(props) {
       </div>
 
       <div class="section-card">
-        <div class="section-title">{t(lang(), "shortcutsTitle")}</div>
+        <div class="section-title">{stripEmoji(t(lang(), "shortcutsTitle"))}</div>
         <div class="shortcuts-list">
           <div class="shortcut-item"><kbd>Ctrl+N</kbd> <span>{t(lang(), "shortcutAdd")}</span></div>
           <div class="shortcut-item"><kbd>Ctrl+F</kbd> <span>{t(lang(), "shortcutSearch")}</span></div>

@@ -80,7 +80,7 @@ export default function SongFormModal(props) {
             <label>{t(props.lang, "favorite")}</label>
             <button type="button" class="fav-toggle-btn" classList={{ active: favorite() }}
               onClick={() => setFavorite(!favorite())}>
-              {favorite() ? "⭐" : "☆"} {favorite() ? t(props.lang, "favorited") : t(props.lang, "favorite")}
+              <span aria-hidden="true">{favorite() ? "★" : "☆"}</span> {favorite() ? t(props.lang, "favorited") : t(props.lang, "favorite")}
             </button>
           </div>
         </div>

@@ -1,17 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>音愈时光 · 歌曲管理 · 随机选歌</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;520;560;600;650;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>音愈时光 MeloHeal · 歌曲管理 · 歌单 · 统计 · 随机选歌</title>
+<meta name="description" content="音愈时光 MeloHeal 是一款纯本地的歌曲管理应用：整理歌曲与歌单、按分类和语言统计、一键随机选歌。数据只保存在你的浏览器里，免注册、无后端，可安装到桌面离线使用。">
+<meta name="keywords" content="音愈时光,MeloHeal,歌曲管理,歌单管理,随机选歌,音乐统计,本地存储,离线应用,PWA,Solid.js,Tauri">
+<meta name="author" content="MeloHeal">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#F8F7FB">
+<meta name="color-scheme" content="light dark">
+<meta name="application-name" content="音愈时光 MeloHeal">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="音愈时光">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="canonical" href="https://1012905.github.io/MeloHeal/">
+
+<!-- 图标 / PWA 清单 -->
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.webmanifest">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="音愈时光 MeloHeal">
+<meta property="og:title" content="音愈时光 · 歌曲管理 · 歌单 · 统计 · 随机选歌">
+<meta property="og:description" content="纯本地歌曲管理应用：歌单整理、分类与语言统计、一键随机选歌。数据只存在你的浏览器里，免注册、可离线安装。">
+<meta property="og:url" content="https://1012905.github.io/MeloHeal/">
+<meta property="og:image" content="https://1012905.github.io/MeloHeal/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="音愈时光 MeloHeal — 歌曲管理 · 歌单 · 统计 · 随机选歌">
+<meta property="og:locale" content="zh_CN">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="音愈时光 · 歌曲管理 · 歌单 · 统计 · 随机选歌">
+<meta name="twitter:description" content="纯本地歌曲管理应用：歌单整理、分类与语言统计、一键随机选歌。免注册、可离线安装。">
+<meta name="twitter:image" content="https://1012905.github.io/MeloHeal/og-image.png">
+<meta name="twitter:image:alt" content="音愈时光 MeloHeal">
+
+<!-- 结构化数据 -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["WebApplication", "MusicApplication"],
+  "name": "音愈时光 MeloHeal",
+  "alternateName": "MeloHeal",
+  "url": "https://1012905.github.io/MeloHeal/",
+  "description": "纯本地的歌曲管理应用：整理歌曲与歌单、分类与语言统计、一键随机选歌，数据只保存在浏览器 localStorage 中。",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "音乐管理",
+  "operatingSystem": "Web, Windows, macOS, Linux, Android, iOS",
+  "inLanguage": ["zh-CN", "en"],
+  "isAccessibleForFree": true,
+  "license": "GPL-3.0-or-later",
+  "image": "https://1012905.github.io/MeloHeal/og-image.png",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "featureList": [
+    "歌曲管理：添加 / 编辑 / 批量导入 / 模糊去重 / 搜索排序",
+    "歌单管理：自建歌单、按歌单过滤",
+    "随机选歌：按分类与语言筛选后抽取",
+    "数据统计：分类分布、语言分布、时间趋势",
+    "纯本地存储：无需账号与后端",
+    "PWA：可安装到桌面、离线可用"
+  ]
+}
+</script>
+
+<!-- 自托管字体（已移除 Google Fonts CDN，零外部依赖 / 可离线） -->
+<link rel="preload" as="font" type="font/woff2" href="./fonts/inter-latin.woff2" crossorigin>
+<link rel="stylesheet" href="./fonts/fonts.css">
 <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
 <div id="root"></div>
 <script type="module" src="/src/error-logger.js"></script>
 <script type="module" src="/src/index.jsx"></script>
+<script type="module" src="/src/pwa.js"></script>
 </body>
 </html>

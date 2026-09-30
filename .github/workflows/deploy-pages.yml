@@ -1,0 +1,96 @@
+# 音愈时光 MeloHeal —— 构建并部署到 GitHub Pages
+#
+# 触发：push 到 main / 手动 workflow_dispatch
+# 流程：npm ci → npm test → npm run build → 产物自检 → upload-pages-artifact → deploy-pages
+#
+# 前置（仓库 Settings → Pages）：Source 选择 "GitHub Actions"。
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# GITHUB_TOKEN 最小权限：读仓库 + 写 Pages + OIDC 令牌
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只跑一个 Pages 部署；已排队的部署不打断正在进行的发布
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: 构建与测试
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 配置 Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: 安装依赖（严格按 lockfile）
+        run: npm ci
+
+      - name: 单元测试
+        run: npm test
+
+      - name: 构建前端产物
+        run: npm run build
+
+      - name: 校验产物（PWA 资源齐全、无外部 CDN）
+        run: |
+          set -eu
+          missing=0
+          for f in \
+            dist/index.html \
+            dist/manifest.webmanifest \
+            dist/sw.js \
+            dist/favicon.svg \
+            dist/og-image.png \
+            dist/icons/favicon-32.png \
+            dist/icons/apple-touch-icon.png \
+            dist/icons/icon-192.png \
+            dist/icons/icon-512.png \
+            dist/icons/icon-maskable-512.png \
+            dist/fonts/fonts.css \
+            dist/fonts/inter-latin.woff2 \
+            dist/fonts/noto-sans-sc-subset.woff2
+          do
+            if [ ! -f "$f" ]; then echo "::error::缺少产物 $f"; missing=1; fi
+          done
+          [ "$missing" -eq 0 ] || exit 1
+
+          # 应用外壳里不允许再出现外部字体 CDN
+          if grep -Eq 'fonts\.googleapis\.com|fonts\.gstatic\.com' dist/index.html; then
+            echo "::error::dist/index.html 仍引用外部字体 CDN"; exit 1
+          fi
+          echo "产物校验通过：$(du -sh dist | cut -f1) / $(find dist -type f | wc -l) 个文件"
+
+      - name: 配置 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上传站点产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: 部署到 Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 发布
+        id: deployment
+        uses: actions/deploy-pages@v4

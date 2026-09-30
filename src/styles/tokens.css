@@ -1,12 +1,24 @@
 /* ==========================================================================
-   🎨 Design Tokens — 设计系统
-   基于 8dp 基准网格 · 6 级字号阶梯 · 60-30-10 配色法则
+   音愈时光 · 设计 Tokens — 「私人音乐收藏」设计语言
+   柔和中性底 · 深靛/梅子主色 · 珊瑚点缀 · 8dp 网格 · 6 级字号阶梯
+
+   约定（保持向后兼容，组件与旧样式引用的变量名一律不改）：
+     --space-N / --text-* / --radius-* / --shadow-* / --duration-* / --ease-*
+     --accent-solid / --accent-soft / --accent-glow
+     --text-primary / --text-secondary / --text-muted
+     --bg-surface / --bg-card / --glass-border / --glass-shadow
+   主题通过 body 类名切换：.theme-pink / .theme-blue / .theme-green / .theme-purple
+   暗色通过 body[data-theme="dark"] 切换
    ========================================================================== */
 
-/* ── 间距系统 (8dp 网格) ── */
+/* ==========================================================================
+   1. 尺度类 Tokens（与主题 / 明暗无关）
+   ========================================================================== */
 :root {
+  /* ── 间距系统 (8dp 网格) ── */
   --space-2:   2px;   /* 微调 —— 唯一非 8dp 值 */
   --space-4:   4px;
+  --space-6:   6px;
   --space-8:   8px;
   --space-12: 12px;
   --space-16: 16px;
@@ -16,78 +28,360 @@
   --space-40: 40px;
   --space-48: 48px;
   --space-64: 64px;
-}
 
-/* ── 6 级字号阶梯 + 流体缩放 ── */
-:root {
-  --text-h1:       clamp(2rem,   5vw, 3rem);     /* 32–48px */
-  --text-h2:       clamp(1.5rem, 3vw, 2rem);     /* 24–32px */
-  --text-h3:       clamp(1.25rem,2vw, 1.5rem);   /* 20–24px */
-  --text-h4:       clamp(1.125rem,1.8vw,1.25rem);/* 18–20px */
-  --text-body:     clamp(0.875rem,1.5vw,1rem);   /* 14–16px */
-  --text-small:    clamp(0.75rem,1.2vw,0.875rem);/* 12–14px */
-  --text-caption:  0.75rem;                      /* 12px 固定 */
+  /* ── 字号阶梯 + 流体缩放 ── */
+  --text-display: clamp(2.25rem, 4.5vw, 3.25rem); /* 聚光灯结果 */
+  --text-h1:       clamp(1.375rem, 2.4vw, 1.75rem); /* 品牌标题 */
+  --text-h2:       clamp(1.25rem, 2.2vw, 1.5rem);   /* 页面区块 */
+  --text-h3:       clamp(1.0625rem, 1.6vw, 1.1875rem); /* 卡片标题 */
+  --text-h4:       clamp(1rem, 1.4vw, 1.0625rem);
+  --text-body:     clamp(0.9375rem, 1.2vw, 1rem);   /* 15–16px */
+  --text-small:    clamp(0.8125rem, 1vw, 0.875rem); /* 13–14px */
+  --text-caption:  0.75rem;                          /* 12px 固定 */
+  --text-micro:    0.6875rem;                        /* 11px 徽标 */
 
   --font-sans: 'Inter', 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
-}
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Fira Code', ui-monospace, monospace;
 
-/* ── 灰度色阶 (10 级) ── */
-:root {
-  --gray-50:  #fafafa;
-  --gray-100: #f5f5f5;
-  --gray-200: #eeeeee;
-  --gray-300: #e0e0e0;
-  --gray-400: #bdbdbd;
-  --gray-500: #9e9e9e;
-  --gray-600: #757575;
-  --gray-700: #616161;
-  --gray-800: #424242;
-  --gray-900: #212121;
-}
+  /* 中文标题降一档字重更精致；数字用等宽 */
+  --weight-title:   560;   /* 拉丁变量字体可用；中文回落到 500/600 */
+  --weight-strong:  600;
+  --weight-body:    450;
+  --weight-muted:   500;
 
-/* ── 语义色体系 ── */
-:root {
-  --color-success:       #4caf50;
-  --color-success-soft:  rgba(76, 175, 80, 0.12);
-  --color-success-glow:  rgba(76, 175, 80, 0.25);
-
-  --color-error:         #e57373;
-  --color-error-soft:    rgba(229, 115, 115, 0.12);
-  --color-error-glow:    rgba(229, 115, 115, 0.25);
-
-  --color-warning:       #ffb74d;
-  --color-warning-soft:  rgba(255, 183, 77, 0.12);
-  --color-warning-glow:  rgba(255, 183, 77, 0.25);
-
-  --color-info:          #64b5f6;
-  --color-info-soft:     rgba(100, 181, 246, 0.12);
-  --color-info-glow:     rgba(100, 181, 246, 0.25);
-}
-
-/* ── 圆角系统 ── */
-:root {
+  /* ── 圆角系统 ── */
+  --radius-xs:   6px;
   --radius-sm:   8px;
   --radius-md:  12px;
   --radius-lg:  16px;
-  --radius-xl:  24px;
-  --radius-2xl: 28px;
-  --radius-3xl: 36px;
+  --radius-xl:  20px;
+  --radius-2xl: 26px;
+  --radius-3xl: 34px;
   --radius-full: 9999px;
-}
 
-/* ── 阴影系统 ── */
-:root {
-  --shadow-sm:  0 2px 8px  rgba(0,0,0,0.06);
-  --shadow-md:  0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg:  0 8px 32px rgba(0,0,0,0.10);
-  --shadow-xl:  0 20px 48px rgba(0,0,0,0.12);
-}
+  /* ── 阴影系统 ── */
+  --shadow-sm:  0 1px 2px rgba(24, 20, 40, 0.05);
+  --shadow-md:  0 2px 8px -2px rgba(24, 20, 40, 0.08), 0 8px 24px -14px rgba(24, 20, 40, 0.16);
+  --shadow-lg:  0 12px 32px -18px rgba(24, 20, 40, 0.24), 0 2px 6px -2px rgba(24, 20, 40, 0.08);
+  --shadow-xl:  0 28px 60px -28px rgba(24, 20, 40, 0.34), 0 4px 12px -6px rgba(24, 20, 40, 0.10);
 
-/* ── 动效时长 ── */
-:root {
+  /* ── 动效 ── */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.42, 0.64, 1);
   --duration-fast:   150ms;
   --duration-normal: 250ms;
   --duration-slow:   400ms;
+  --duration-slower: 620ms;
+
+  /* ── 布局尺寸 ── */
+  --layout-max:        1180px;
+  --layout-sidebar-w:  236px;
+  --layout-content-w:  760px;
+  --layout-bottom-h:   64px;
+  --touch-target:      44px;
+  --cover-size:        46px;
+  --cover-radius:      12px;
+
+  /* ── 层级 ── */
+  --z-sidebar: 40;
+  --z-toast:   60;
+  --z-modal:   80;
+
+  /* ── 封面占位块（无图片资源，纯 CSS 渐变 + 首字） ── */
+  --cover-sat:    32%;
+  --cover-light:  56%;
+  --cover-light-2: 44%;
+}
+
+/* ==========================================================================
+   2. 中性色阶（明暗共用的原始色板，供新样式取用）
+   ========================================================================== */
+:root {
+  --neutral-0:   #ffffff;
+  --neutral-50:  #f7f6fa;
+  --neutral-100: #efedf4;
+  --neutral-200: #e2dfeb;
+  --neutral-300: #cbc7d8;
+  --neutral-400: #a8a3b8;
+  --neutral-500: #87819a;
+  --neutral-600: #6a6479;
+  --neutral-700: #4d4859;
+  --neutral-800: #322e3c;
+  --neutral-900: #1e1b26;
+  --neutral-950: #131119;
+}
+
+/* ==========================================================================
+   3. 主题基准 —— 亮色「紫烟」（深靛/梅子）
+   未挂主题类名时的兜底色，也是本设计语言的旗舰配色
+   ========================================================================== */
+:root {
+  /* 品牌主色阶（深靛） */
+  --accent-solid:  #5b4b9e;
+  --accent-strong: #493b85;
+  --accent-soft:   #edebf7;
+  --accent-glow:   rgba(91, 75, 158, 0.18);
+  --accent-ink:    #ffffff;             /* 主色上的文字 */
+  --accent-line:   rgba(91, 75, 158, 0.28);
+  --accent-coral:  #d95a3e;             /* 珊瑚点缀：全局恒定 */
+  --accent-coral-soft: rgba(217, 90, 62, 0.14);
+
+  /* 中性底 / 表面 */
+  --bg-app:      #f4f3f9;
+  --bg-surface:  #ffffff;
+  --bg-card:     #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-sunken:   #f7f6fb;
+  --bg-hover:    rgba(91, 75, 158, 0.055);
+  --bg-bar:      rgba(255, 255, 255, 0.88);
+
+  /* 描边 */
+  --border-subtle: #eeeef4;
+  --border:        #e0ddec;
+  --border-strong: #c9c4da;
+  --glass-border:  #e6e3f1;
+
+  /* 文字 */
+  --text-primary:   #1c1a24;
+  --text-secondary: #4c4759;
+  /* --text-muted 在浅色主题下必须对最浅的复合底（#efedf4 级别的 chip/sunken）
+     仍 >=4.5:1，否则小号说明文字不达标。原 #7a7589 仅 3.82:1。 */
+  --text-muted:     #6d687a;
+
+  /* 阴影（亮色） */
+  --glass-shadow: 0 1px 2px rgba(24, 20, 40, 0.04), 0 14px 34px -22px rgba(24, 20, 40, 0.22);
+  --bg-overlay: rgba(19, 17, 25, 0.45);
+}
+
+/* ==========================================================================
+   4. 暗色公共层（表面 / 描边 / 文字 / 语义色）
+   ========================================================================== */
+body[data-theme="dark"] {
+  --accent-ink: #16141f;
+  --accent-coral: #ff8f70;
+  --accent-coral-soft: rgba(255, 143, 112, 0.16);
+
+  --bg-app:      #131219;
+  --bg-surface:  #1b1a23;
+  --bg-card:     #211f2b;
+  --bg-elevated: #292634;
+  --bg-sunken:   #181720;
+  --bg-hover:    rgba(255, 255, 255, 0.06);
+  --bg-bar:      rgba(24, 23, 32, 0.88);
+
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border:        rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --glass-border:  rgba(255, 255, 255, 0.09);
+
+  --text-primary:   #ebe8f2;
+  --text-secondary: #b2acbf;
+  /* 暗色下对卡片底 #211f2b 需 >=4.5:1（原 #8a8496 为 4.49，差 0.01） */
+  --text-muted:     #8c8698;
+
+  --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 20px 44px -24px rgba(0, 0, 0, 0.72);
+  --bg-overlay: rgba(6, 5, 10, 0.66);
+
+  --cover-light:   52%;
+  --cover-light-2: 38%;
+}
+
+/* ── 语义色（亮） ── */
+:root {
+  --ok:        #2f7d55;
+  --ok-soft:   rgba(47, 125, 85, 0.12);
+  --warn:      #96631a;
+  --warn-soft: rgba(150, 99, 26, 0.12);
+  --danger:    #c0392b;
+  --danger-soft: rgba(192, 57, 43, 0.12);
+  --info:      #3f6ea8;
+  --info-soft: rgba(63, 110, 168, 0.12);
+}
+/* ── 语义色（暗） ── */
+body[data-theme="dark"] {
+  --ok:        #6fcf97;
+  --ok-soft:   rgba(111, 207, 151, 0.15);
+  --warn:      #f2c14e;
+  --warn-soft: rgba(242, 193, 78, 0.15);
+  --danger:    #f08a80;
+  --danger-soft: rgba(240, 138, 128, 0.15);
+  --info:      #8ab4ea;
+  --info-soft: rgba(138, 180, 234, 0.15);
+}
+
+/* ── 旧变量名兼容别名（历史样式 / 内联样式仍在引用） ── */
+:root {
+  --color-success: var(--ok);
+  --color-success-soft: var(--ok-soft);
+  --color-error: var(--danger);
+  --color-error-soft: var(--danger-soft);
+  --color-warning: var(--warn);
+  --color-warning-soft: var(--warn-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  /* TabSongs 内联 style 用到 --error-color */
+  --error-color: var(--danger);
+  --ok-color: var(--ok);
+  --warn-color: var(--warn);
+}
+
+/* ==========================================================================
+   5. 四套主题的品牌色阶（克制、低饱和，亮/暗各自调和）
+   命名沿用 theme-pink / theme-blue / theme-green / theme-purple
+   ========================================================================== */
+
+/* ── 梅子 · 亮（pink） ── */
+body.theme-pink:not([data-theme="dark"]) {
+  --accent-solid:  #a03d63;
+  --accent-strong: #86314f;
+  --accent-soft:   #f9ecf1;
+  --accent-glow:   rgba(160, 61, 99, 0.16);
+  --accent-line:   rgba(160, 61, 99, 0.26);
+
+  --bg-app:      #f7f3f5;
+  --bg-surface:  #fffdfe;
+  --bg-card:     #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-sunken:   #faf6f8;
+  --bg-hover:    rgba(160, 61, 99, 0.055);
+  --bg-bar:      rgba(255, 253, 254, 0.88);
+
+  --border-subtle: #f1eaee;
+  --border:        #e5dae1;
+  --border-strong: #cfc0c9;
+  --glass-border:  #ece3e8;
+
+  --text-primary:   #231a1f;
+  --text-secondary: #54424c;
+  --text-muted:     #766670;
+}
+/* ── 梅子 · 暗（pink） ── */
+body.theme-pink[data-theme="dark"] {
+  --accent-solid:  #e08aa8;
+  --accent-strong: #eda4c0;
+  --accent-soft:   rgba(224, 138, 168, 0.16);
+  --accent-glow:   rgba(224, 138, 168, 0.24);
+  --accent-line:   rgba(224, 138, 168, 0.32);
+  --bg-app: #181316;
+}
+
+/* ── 蓝屿 · 亮（blue） ── */
+body.theme-blue:not([data-theme="dark"]) {
+  --accent-solid:  #3d6ba4;
+  --accent-strong: #325888;
+  --accent-soft:   #e9f0f8;
+  --accent-glow:   rgba(61, 107, 164, 0.16);
+  --accent-line:   rgba(61, 107, 164, 0.26);
+
+  --bg-app:      #f2f4f8;
+  --bg-surface:  #fdfeff;
+  --bg-card:     #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-sunken:   #f5f7fa;
+  --bg-hover:    rgba(61, 107, 164, 0.055);
+  --bg-bar:      rgba(253, 254, 255, 0.88);
+
+  --border-subtle: #e9edf3;
+  --border:        #dbe2ec;
+  --border-strong: #c2cddd;
+  --glass-border:  #e3e9f2;
+
+  --text-primary:   #1a2230;
+  --text-secondary: #46536a;
+  --text-muted:     #616b7c;
+}
+/* ── 蓝屿 · 暗（blue） ── */
+body.theme-blue[data-theme="dark"] {
+  --accent-solid:  #7fa9e0;
+  --accent-strong: #9cbfee;
+  --accent-soft:   rgba(127, 169, 224, 0.16);
+  --accent-glow:   rgba(127, 169, 224, 0.24);
+  --accent-line:   rgba(127, 169, 224, 0.32);
+  --bg-app: #12151b;
+}
+
+/* ── 翠林 · 亮（green） ── */
+body.theme-green:not([data-theme="dark"]) {
+  --accent-solid:  #3a7450;   /* 对激活 chip 底 #e9f2ec 需 ≥4.5（原 #3d7a54 为 4.47） */
+  --accent-strong: #326545;
+  --accent-soft:   #e9f2ec;
+  --accent-glow:   rgba(61, 122, 84, 0.16);
+  --accent-line:   rgba(61, 122, 84, 0.26);
+
+  --bg-app:      #f2f5f2;
+  --bg-surface:  #fdfefd;
+  --bg-card:     #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-sunken:   #f5f8f6;
+  --bg-hover:    rgba(61, 122, 84, 0.055);
+  --bg-bar:      rgba(253, 254, 253, 0.88);
+
+  --border-subtle: #e9f0eb;
+  --border:        #dbe6df;
+  --border-strong: #c2d3c9;
+  --glass-border:  #e4ece7;
+
+  --text-primary:   #182420;
+  --text-secondary: #44544b;
+  --text-muted:     #5f6c74;
+}
+/* ── 翠林 · 暗（green） ── */
+body.theme-green[data-theme="dark"] {
+  --accent-solid:  #7cc394;
+  --accent-strong: #9ad5ae;
+  --accent-soft:   rgba(124, 195, 148, 0.16);
+  --accent-glow:   rgba(124, 195, 148, 0.24);
+  --accent-line:   rgba(124, 195, 148, 0.32);
+  --bg-app: #121713;
+}
+
+/* ── 紫烟 · 亮（purple，旗舰） ── */
+body.theme-purple:not([data-theme="dark"]) {
+  --accent-solid:  #5b4b9e;
+  --accent-strong: #493b85;
+  --accent-soft:   #edebf7;
+  --accent-glow:   rgba(91, 75, 158, 0.18);
+  --accent-line:   rgba(91, 75, 158, 0.28);
+
+  --bg-app:      #f4f3f9;
+  --bg-surface:  #ffffff;
+  --bg-card:     #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-sunken:   #f7f6fb;
+  --bg-hover:    rgba(91, 75, 158, 0.055);
+  --bg-bar:      rgba(255, 255, 255, 0.88);
+
+  --border-subtle: #eeeef4;
+  --border:        #e0ddec;
+  --border-strong: #c9c4da;
+  --glass-border:  #e6e3f1;
+
+  --text-primary:   #1c1a24;
+  --text-secondary: #4c4759;
+  --text-muted:     #6d687a;
+}
+/* ── 紫烟 · 暗（purple，旗舰） ── */
+body.theme-purple[data-theme="dark"] {
+  --accent-solid:  #9b8ce8;
+  --accent-strong: #b3a6f2;
+  --accent-soft:   rgba(155, 140, 232, 0.16);
+  --accent-glow:   rgba(155, 140, 232, 0.26);
+  --accent-line:   rgba(155, 140, 232, 0.34);
+  --bg-app: #131219;
+}
+
+/* ==========================================================================
+   6. 主题色卡（TabSettings 的色板预览，需与上面 --accent-solid 同步）
+   ========================================================================== */
+:root {
+  --swatch-pink:   #a03d63;
+  --swatch-blue:   #3d6ba4;
+  --swatch-green:  #3a7450;
+  --swatch-purple: #5b4b9e;
+}
+body[data-theme="dark"] {
+  --swatch-pink:   #e08aa8;
+  --swatch-blue:   #7fa9e0;
+  --swatch-green:  #7cc394;
+  --swatch-purple: #9b8ce8;
 }

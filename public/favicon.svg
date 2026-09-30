@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="音愈时光 MeloHeal">
+  <title>音愈时光 MeloHeal</title>
+  <!-- 圆角方底 + 音波五柱 + 珊瑚点缀：与 scripts/gen-icons.py 的几何参数一一对应 -->
+  <defs>
+    <linearGradient id="mh-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6C5CA8"/>
+      <stop offset="1" stop-color="#4A3C78"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#mh-bg)"/>
+  <g fill="#F8F7FB">
+    <rect x="11" y="26" width="6" height="12" rx="3"/>
+    <rect x="20" y="22" width="6" height="20" rx="3"/>
+    <rect x="38" y="21" width="6" height="22" rx="3"/>
+    <rect x="47" y="26" width="6" height="12" rx="3"/>
+  </g>
+  <rect x="29" y="15" width="6" height="34" rx="3" fill="#FF7A6B"/>
+</svg>
