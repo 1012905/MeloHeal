@@ -1601,7 +1601,15 @@ select.form-input { cursor: pointer; }
     background: var(--accent-soft);
     border-radius: var(--radius-sm);
   }
-  .tab-btn-icon { padding: 3px 8px; border-radius: var(--radius-sm); transition: background var(--duration-fast); }
+  /* 注意：全局 * { box-sizing: border-box } 会让 width=18 的 <svg> 视口
+     被 padding 挤成 2×12，viewBox 内容缩成一个点 —— 必须回到 content-box，
+     让 padding 只扩张高亮底色，图标视口保持 18×18。 */
+  .tab-btn-icon {
+    box-sizing: content-box;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    transition: background var(--duration-fast);
+  }
   .tab-btn.active::before {
     left: 50%;
     top: 0;

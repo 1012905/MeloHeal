@@ -38,6 +38,8 @@ desktop.ini
 
 # --- UI 重设计过程截图（纯证据，不入库） ---
 ui-redesign-shots/
+# --- 响应式/图标问题验证截图（纯证据，不入库） ---
+.shots/
 
 # --- 测试覆盖率 ---
 coverage/
