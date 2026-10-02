@@ -107,10 +107,11 @@ export default function TabSongs(props) {
         <Show when={vM() === "list"}>
           <div class="song-table">
             <For each={dS()}>
-              {(song) => (
+              {(song, index) => (
                 <div class="song-row" classList={{ selected: sS().has(song.id) }}
                   onClick={() => tS(song.id)}
-                  style={{ "animation-delay": `${dS().indexOf(song) * 30}ms` }}>
+                  /* 入场错峰只给前 10 行（上限 300ms），避免 400 首时逐行 indexOf 的 O(n²) 与 12 秒延迟 */
+                  style={{ "animation-delay": `${Math.min(index(), 10) * 30}ms` }}>
                   <span class="song-row-check">
                     <input type="checkbox" checked={sS().has(song.id)} aria-label={song.name}
                       onChange={(e) => { e.stopPropagation(); tS(song.id); }} />
@@ -165,10 +166,10 @@ export default function TabSongs(props) {
         <Show when={vM() === "cards"}>
           <div class="song-cards">
             <For each={dS()}>
-              {(song) => (
+              {(song, index) => (
                 <div class="song-card" classList={{ selected: sS().has(song.id) }}
                   onClick={() => tS(song.id)}
-                  style={{ "animation-delay": `${dS().indexOf(song) * 30}ms` }}>
+                  style={{ "animation-delay": `${Math.min(index(), 10) * 30}ms` }}>
                   <div class="song-card-cover" style={coverStyle(song.name)} aria-hidden="true">
                     {coverInitial(song.name)}
                   </div>

@@ -5,7 +5,7 @@
  */
 
 import { createSignal, createEffect } from "solid-js";
-import { detectLanguage, normalizeForCompare, findSimilar } from "../lib/songs.js";
+import { detectLanguage, normalizeForCompare, findSimilar, normalizeTitle, parseSongs, toUniqueTitles, buildOutputText, splitNewTitles } from "../lib/songs.js";
 
 /* ── helpers ── */
 let _idCounter = Date.now();
@@ -236,17 +236,23 @@ export default function useSongStore() {
     return pick;
   }
 
-  // ── import/export ──
-  function exportTxt(lang) {
-    const footer = lang === "zh" ? `共${songs().length}首` : `Total: ${songs().length}`;
-    return ["Song Name", "", ...songs().map((s) => s.name), "", footer].join("\n");
+  // ── import/export（music.txt 格式，与 SongProcessing.html 保持一致） ──
+  // 导出：表头"歌名" + 空行 + 歌名列表 + 5 个空行 + 统计行，标题按规则归一化
+  function exportTxt() {
+    return buildOutputText(songs().map((s) => normalizeTitle(s.name)));
   }
 
+  // 导入歌名：先做库内查重（规范化精确匹配，已存在的跳过），再入库
+  // 返回 { added, skipped }，供 UI 提示"导入 N 首、跳过 M 首"
+  function importSongs(names) {
+    const { fresh, skipped } = splitNewTitles(names, songs());
+    const added = addSongs(fresh);
+    return { added, skipped };
+  }
+
+  // TXT 导入：跳过表头/空行、遇到统计行停止、归一化并去重，最后与库内查重
   function importTxt(text) {
-    const lines = text.split("\n")
-      .map((l) => l.trim())
-      .filter((l) => l && !/^共\d+首$|^Total:\s*\d+$/i.test(l) && l !== "Song Name" && l !== "歌名");
-    return addSongs(lines);
+    return importSongs(toUniqueTitles(parseSongs(text)));
   }
 
   function exportJson() {
@@ -349,6 +355,7 @@ export default function useSongStore() {
     sortSongs,
     pickRandom,
     exportTxt,
+    importSongs,
     importTxt,
     exportJson,
     importJson,

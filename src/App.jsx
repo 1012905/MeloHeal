@@ -1,9 +1,10 @@
-import { createSignal, createEffect, Show, For, lazy, Suspense, onCleanup, onMount } from "solid-js";
+import { createSignal, createEffect, createMemo, Show, For, lazy, Suspense, onCleanup, onMount } from "solid-js";
 import Header from "./components/Header.jsx";
 import SongFormModal from "./components/SongFormModal.jsx";
 import SkeletonPage from "./components/Skeleton.jsx";
 import useSongStore from "./hooks/useSongStore.js";
 import { t, getSystemLang } from "./lib/i18n.js";
+import { parseSongs, toUniqueTitles } from "./lib/songs.js";
 import { stripEmoji } from "./components/display.js";
 
 const TabSongs = lazy(() => import("./components/TabSongs.jsx"));
@@ -78,7 +79,15 @@ export default function App() {
 
   const store = useSongStore();
   const [activeTab, setActiveTab] = createSignal("songs");
-  const [searchQuery, setSearchQuery] = createSignal("");
+  const [searchQuery, setSearchQuery] = createSignal(""); // 输入框回显值（即时）
+  const [debouncedQuery, setDebouncedQuery] = createSignal(""); // 实际过滤词（防抖）
+  let searchTimer;
+  /** 搜索防抖：字符即时回显，停顿 120ms 后才触发列表过滤/排序，避免逐字重算 */
+  const handleSearchInput = (value) => {
+    setSearchQuery(value);
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => setDebouncedQuery(value), 120);
+  };
   const [sortBy, setSortBy] = createSignal("az");
   const [viewMode, setViewMode] = createSignal("list");
   const [filters, setFilters] = createSignal({ category: "", language: "", favoriteOnly: false });
@@ -115,9 +124,12 @@ export default function App() {
 
   onMount(() => window.addEventListener("keydown", handleKeyDown));
   onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
+  onCleanup(() => clearTimeout(searchTimer));
 
-  const displayedSongs = () => {
-    const q = searchQuery();
+  // 过滤 + 排序结果做记忆化：只在搜索词/筛选/排序/曲库变化时重算一次，
+  // 而不是列表里每一行渲染时都重算一遍（400 首时那是每次按键 300ms+ 的来源）
+  const displayedSongs = createMemo(() => {
+    const q = debouncedQuery();
     const flt = filters();
     const pl = selectedPlaylist();
     let list;
@@ -128,7 +140,7 @@ export default function App() {
       list = store.searchSongs(q, flt);
     }
     return store.sortSongs(list, sortBy());
-  };
+  });
 
   const handleEditSong = (id, updates) => {
     store.updateSong(id, updates);
@@ -144,18 +156,26 @@ export default function App() {
     showToast(t(lang(), "deleted"), "warning");
   };
 
+  /** 导入提示：跳过库内重复时额外提示跳过数量 */
+  const importToast = (count, skipped) =>
+    skipped > 0
+      ? t(lang(), "importSkipped", count, skipped)
+      : t(lang(), "importSuccess", count);
+
   const handleBatchImport = () => {
-    const lines = batchText().split("\n").map((l) => l.trim()).filter(Boolean);
+    // 与 TXT 导入同一套 music.txt 解析规则（跳过表头、遇统计行停止、归一化去重）
+    const lines = toUniqueTitles(parseSongs(batchText()));
     if (lines.length === 0) return;
-    store.addSongs(lines);
+    const { added, skipped } = store.importSongs(lines);
     setBatchText("");
     setShowBatchModal(false);
-    showToast(t(lang(), "importSuccess", lines.length), "success");
+    showToast(importToast(added.length, skipped), "success");
   };
 
   const handleExportTxt = () => {
-    const text = store.exportTxt(lang());
-    downloadBlob(text, "meloheal-songs.txt", "text/plain;charset=utf-8");
+    // 与 SongProcessing.html 相同：music.txt（UTF-8）
+    const text = store.exportTxt();
+    downloadBlob(text, "music.txt", "text/plain;charset=utf-8");
   };
 
   const handleExportJson = () => {
@@ -181,8 +201,8 @@ export default function App() {
       if (!file) return;
       const reader = new FileReader();
       reader.onload = (ev) => {
-        const count = store.importTxt(ev.target.result).length;
-        showToast(t(lang(), "importSuccess", count), "success");
+        const { added, skipped } = store.importTxt(ev.target.result);
+        showToast(importToast(added.length, skipped), "success");
       };
       reader.readAsText(file);
     };
@@ -237,10 +257,10 @@ export default function App() {
   const selectAll = () => setSelectedSongs(new Set(displayedSongs().map((s) => s.id)));
   const clearSelection = () => setSelectedSongs(new Set());
 
-  const categories = () => {
+  const categories = createMemo(() => {
     const cats = new Set(store.songs().map((s) => s.category || ""));
     return Array.from(cats).filter(Boolean);
-  };
+  });
 
   // Shared props passed to all tab components
   const tabCtx = { store, lang, t, categories, showToast };
@@ -303,7 +323,7 @@ export default function App() {
         <Suspense fallback={<SkeletonPage />}>
           <Show when={activeTab() === "songs"}>
             <TabSongs {...tabCtx}
-              searchQuery={searchQuery} setSearchQuery={setSearchQuery}
+              searchQuery={searchQuery} setSearchQuery={handleSearchInput}
               sortBy={sortBy} setSortBy={setSortBy}
               viewMode={viewMode} setViewMode={setViewMode}
               filters={filters} setFilters={setFilters}
