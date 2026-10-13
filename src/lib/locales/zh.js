@@ -32,10 +32,13 @@ export default {
   favorited: "已收藏",
 
   addCategory: "新分类…",
+  newCategoryPlaceholder: "输入新分类名称",
   tags: "标签",
   save: "保存",
   cancel: "取消",
   selected: "已选择",
+  selectAll: "全选",
+  clearSelection: "清空选择",
   close: "关闭",
   noSongs: "✨ 暂无歌曲，点击添加",
   confirmDelete: "确认删除这 {0} 首歌曲？",

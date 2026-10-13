@@ -113,8 +113,10 @@ export default function TabSongs(props) {
                   /* 入场错峰只给前 10 行（上限 300ms），避免 400 首时逐行 indexOf 的 O(n²) 与 12 秒延迟 */
                   style={{ "animation-delay": `${Math.min(index(), 10) * 30}ms` }}>
                   <span class="song-row-check">
+                    {/* 复选框自行处理点击：拦截 click 冒泡，避免同时触发行 onClick，导致"选中→取消"净零 */}
                     <input type="checkbox" checked={sS().has(song.id)} aria-label={song.name}
-                      onChange={(e) => { e.stopPropagation(); tS(song.id); }} />
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={() => tS(song.id)} />
                   </span>
                   <span class="song-cover" style={coverStyle(song.name)} aria-hidden="true">{coverInitial(song.name)}</span>
                   <span class="song-row-main">

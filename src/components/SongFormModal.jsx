@@ -1,5 +1,6 @@
 import { createSignal, createEffect, Show, For } from "solid-js";
 import { t } from "../lib/i18n.js";
+import { detectLanguage } from "../lib/songs.js";
 
 export default function SongFormModal(props) {
   const [name, setName] = createSignal(props.initial?.name || "");
@@ -29,7 +30,8 @@ export default function SongFormModal(props) {
     props.onAutoSave({
       name: name().trim(),
       category: cat,
-      language: language() || "en",
+      // 未手动选语言时按歌名自动识别，避免中文歌被一律存成 English
+      language: language() || detectLanguage(name().trim()),
       favorite: favorite(),
     });
   };
@@ -63,13 +65,16 @@ export default function SongFormModal(props) {
               <option value="__new__">+ {t(props.lang, "addCategory") || "New Category"}</option>
             </select>
             <Show when={category() === "__new__"}>
-              <input type="text" class="form-input" style="margin-top:6px;" placeholder="New category name"
+              <input type="text" class="form-input" style="margin-top:6px;" placeholder={t(props.lang, "newCategoryPlaceholder")}
                 value={customCat()} onInput={(e) => setCustomCat(e.target.value)} />
             </Show>
           </div>
           <div class="form-group">
             <label>{t(props.lang, "language")}</label>
-            <select class="form-input" value={language()} onChange={(e) => setLanguage(e.target.value)}>
+            {/* 未手动选择时显示按歌名识别出的语言，与保存逻辑保持一致 */}
+            <select class="form-input"
+              value={language() || (name().trim() ? detectLanguage(name().trim()) : "en")}
+              onChange={(e) => setLanguage(e.target.value)}>
               <option value="en">{t(props.lang, "langEn")}</option>
               <option value="zh">{t(props.lang, "langZh")}</option>
               <option value="ja">{t(props.lang, "langJa")}</option>

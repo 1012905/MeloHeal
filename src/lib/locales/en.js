@@ -32,10 +32,13 @@ export default {
   favorited: "Favorited",
 
   addCategory: "New Category…",
+  newCategoryPlaceholder: "New category name",
   tags: "Tags",
   save: "Save",
   cancel: "Cancel",
   selected: "selected",
+  selectAll: "Select All",
+  clearSelection: "Clear Selection",
   close: "Close",
   noSongs: "✨ No songs yet. Click to add.",
   confirmDelete: "Delete {0} song(s)?",

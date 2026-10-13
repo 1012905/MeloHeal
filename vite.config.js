@@ -5,7 +5,9 @@ import { viteSingleFile } from "vite-plugin-singlefile";
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig({
-  plugins: [solid(), viteSingleFile()],
+  // 测试（vitest）下关闭 solid-refresh HMR 运行时注入：它依赖 import.meta.hot 的虚拟模块，
+  // 在测试环境里会解析失败，导致组件测试无法 import。
+  plugins: [solid({ hot: !process.env.VITEST }), viteSingleFile()],
   clearScreen: false,
 
   build: {
